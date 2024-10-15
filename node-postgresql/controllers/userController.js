@@ -28,7 +28,7 @@ async function updateUser(id, user) {
         return res.rowCount;
     } catch (error) {
         console.error("Erro ao atualizar usuário:", error);
-        throw error;  
+        return res.error;  
     }
 }
 

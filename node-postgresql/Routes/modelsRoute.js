@@ -11,25 +11,27 @@ modelsRouter.get("/modelos", async (req,res) =>{
 modelsRouter.get("/modelos/:id", async (req, res) => {
     const { id } = req.params;
     try {
-        const marcas = await modelsController.selectModelById(id);
-        if (!marcas) {
-            return res.status(404).json({ message: "modelo não encontrado" });
-        } 
-        res.json(marcas);
+        const modelo = await modelsController.selectModelById(id);
+        if (modelo.length === 0) {
+            return res.json({ message: "Modelo não encontrado" });
+        }
+        res.json(usuario);
     } catch (erro) {
-        console.error("Erro ao buscar modelo por ID:", erro);
-        res.sendStatus(500);
+        return res.json({ message: "Erro ao buscar modelo por ID"});
     }
 });
 
 
+
 modelsRouter.post("/modelos", async (req,res) =>{
     try{
+        if(Object.keys(req.body).length === 0){
+            return res.json({ message: "Não é possivel adicionar um item nulo" })
+        }
          await modelsController.insertModel(req.body)
          res.sendStatus(201)
     } catch (erro){
-         console.log("Erro:", erro)
-         res.sendStatus(500)
+         return res.json({message: "Erro:", erro})
     }
  })
 
@@ -40,8 +42,7 @@ modelsRouter.post("/modelos", async (req,res) =>{
         const rowsAffected = await modelsController.updateModel(id, { nome, modelo});
         res.json({ message: "modelo atualizado com sucesso" });
     } catch (erro) {
-        console.error("Erro ao atualizar modelo:", erro);
-        res.sendStatus(500);
+        return res.json({message: "Erro:", erro})
     }
 });
 
@@ -49,9 +50,9 @@ modelsRouter.delete("/modelos/:id", async (req, res) =>{
     try{
         await modelsController.deleteModel(req.params.id);
         res.sendStatus(204)
+        return res.json({message: "Modelo deletado com sucesso"})
     } catch (erro){
-        console.error("Erro ao atualizar modelo:", erro);
-        return res.sendStatus(500);
+        return res.json({message: "Erro:", erro})
     }
 })
 

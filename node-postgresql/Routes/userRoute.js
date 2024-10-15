@@ -4,31 +4,37 @@ const userController = require("../controllers/userController");
 
 /* ----------------------CRUD usuarios------------------------ */
 userRouter.get("/usuarios", async (req, res) => {
-    const usuarios = await userController.selectUsers();
-    res.json(usuarios);
+    try {
+        const usuarios = await userController.selectUsers();
+        res.json(usuarios);
+        
+    } catch (error) {
+      return res.json({ message: error.message })
+    }
 });
 
 userRouter.get("/usuarios/:id", async (req, res) => {
     const { id } = req.params;
     try {
         const usuario = await userController.selectUserById(id);
-        if (!usuario) {
-            return res.status(404).json({ message: "Usuário não encontrado" });
+        if (usuario.length === 0) {
+            return res.json({ message: "Usuário não encontrado" });
         }
         res.json(usuario);
     } catch (erro) {
-        console.error("Erro ao buscar usuário por ID:", erro);
-        res.sendStatus(500);
+        return res.json({ message: "Erro ao buscar usuário por ID:"});
     }
 });
 
 userRouter.post("/usuarios", async (req, res) => {
     try {
+        if(Object.keys(req.body).length === 0){
+            return res.json({ message: "Não é possivel adicionar um item nulo" })
+        }
         await userController.insertUser(req.body);
         res.sendStatus(201);
     } catch (erro) {
-        console.log("Erro:", erro);
-        res.sendStatus(500);
+        return res.json("Erro:", erro);
     }
 });
 

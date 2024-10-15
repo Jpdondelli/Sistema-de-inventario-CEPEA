@@ -12,20 +12,22 @@ brandsRouter.get("/marcas", async (req,res) =>{
 brandsRouter.get("/marcas/:id", async (req, res) => {
     const { id } = req.params;
     try {
-        const marcas = await brandsController.selectBrandById(id);
-        if (!marcas) {
-            return res.status(404).json({ message: "marca não encontrada" });
-        } 
-        res.json(marcas);
+        const marca = await brandsController.selectBrandById(id);
+        if (marca.length === 0) {
+            return res.json({ message: "Marca não encontrado" });
+        }
+        res.json(usuario);
     } catch (erro) {
-        console.error("Erro ao buscar marca por ID:", erro);
-        res.sendStatus(500);
+        return res.json({ message: "Erro ao buscar marca por ID:"});
     }
 });
 
 
 brandsRouter.post("/marcas", async (req,res) =>{
     try{
+        if(Object.keys(req.body).length === 0){
+            return res.json({ message: "Não é possivel adicionar um item nulo" })
+        }
          await brandsController.insertBrand(req.body)
          res.sendStatus(201)
     } catch (erro){
@@ -41,8 +43,7 @@ brandsRouter.post("/marcas", async (req,res) =>{
         const rowsAffected = await brandsController.updateBrand(id, { nome, modelo});
         res.json({ message: "marca atualizada com sucesso" });
     } catch (erro) {
-        console.error("Erro ao atualizar marca:", erro);
-        res.sendStatus(500);
+        return res.json("Erro ao atualizar marca:", erro);
     }
 });
 
