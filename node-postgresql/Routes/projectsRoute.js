@@ -35,7 +35,7 @@ projectsRouter.post("/projetos", async (req,res) =>{
     }
  })
 
- projectsRouter.patch("/projetos/:id", async (req, res) => {
+ projectsRouter.put("/projetos/:id", async (req, res) => {
     const { id } = req.params;
     const { nome } = req.body;
     try {

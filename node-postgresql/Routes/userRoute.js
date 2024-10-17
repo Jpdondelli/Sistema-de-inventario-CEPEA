@@ -38,7 +38,7 @@ userRouter.post("/usuarios", async (req, res) => {
     }
 });
 
-userRouter.patch("/usuarios/:id", async (req, res) => {
+userRouter.put("/usuarios/:id", async (req, res) => {
     const { id } = req.params;
     const { nome, usuario, senha, role } = req.body;
     try {

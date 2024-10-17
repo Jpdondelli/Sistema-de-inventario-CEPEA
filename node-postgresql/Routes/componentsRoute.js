@@ -35,7 +35,7 @@ componentsRouter.post("/componentes", async (req,res) =>{
     }
  })
 
- componentsRouter.patch("/componentes/:id", async (req, res) => {
+ componentsRouter.put("/componentes/:id", async (req, res) => {
     const { id } = req.params;
     const { nome, modelo} = req.body;
     try {

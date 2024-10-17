@@ -35,7 +35,7 @@ modelsRouter.post("/modelos", async (req,res) =>{
     }
  })
 
- modelsRouter.patch("/modelos/:id", async (req, res) => {
+ modelsRouter.put("/modelos/:id", async (req, res) => {
     const { id } = req.params;
     const { nome, modelo} = req.body;
     try {

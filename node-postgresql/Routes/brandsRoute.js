@@ -36,7 +36,7 @@ brandsRouter.post("/marcas", async (req,res) =>{
     }
  })
 
- brandsRouter.patch("/marcas/:id", async (req, res) => {
+ brandsRouter.put("/marcas/:id", async (req, res) => {
     const { id } = req.params;
     const { nome, modelo} = req.body;
     try {

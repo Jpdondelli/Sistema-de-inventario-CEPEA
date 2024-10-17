@@ -34,7 +34,7 @@ responsiblesRouter.post("/responsaveis", async (req,res) =>{
     }
  })
 
- responsiblesRouter.patch("/responsaveis/:id", async (req, res) => {
+ responsiblesRouter.put("/responsaveis/:id", async (req, res) => {
     const { id } = req.params;
     const { nome } = req.body;
     try {

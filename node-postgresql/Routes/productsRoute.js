@@ -34,11 +34,11 @@ productsRouter.post("/produtos", async (req, res) => {
     }
 });
 
-productsRouter.patch("/produtos/:id", async (req, res) => {
+productsRouter.put("/produtos/:id", async (req, res) => {
     const { id } = req.params;
-    const { setor } = req.body;
+    const { tipo } = req.body;
     try {
-        await productsController.updateProduct(id, { setor });
+        await productsController.updateProduct(id, { tipo });
         res.json({ message: "Produto atualizado com sucesso" });
     } catch (erro) {
         console.error("Erro ao atualizar produto:", erro);

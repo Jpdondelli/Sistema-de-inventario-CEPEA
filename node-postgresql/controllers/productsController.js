@@ -15,15 +15,15 @@ async function selectProductById(id){
 
 async function insertProduct(user){
     const client = await connect()
-    const sql = "INSERT INTO inventario.produto(setor) VALUES ($1)"
-    const res = await client.query(sql, [user.setor])
+    const sql = "INSERT INTO inventario.produto(tipo) VALUES ($1)"
+    const res = await client.query(sql, [user.tipo])
 }
 
 async function updateProduct(id, user) {
     try {
         const client = await connect();
-        const sql = "UPDATE inventario.produto SET setor=$1 WHERE id=$2";
-        const values = [user.setor, id];
+        const sql = "UPDATE inventario.produto SET tipo=$1 WHERE id=$2";
+        const values = [user.tipo, id];
         const res = await client.query(sql, values);
         return res.rowCount;
     } catch (error) {
