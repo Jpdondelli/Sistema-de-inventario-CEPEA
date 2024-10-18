@@ -1,5 +1,5 @@
 const connect = require("../dbConnect")
-/* CRUDE para usuarios */
+/* CRUDE para Equipamentos */
 
 async function selectEquipments() {
     const client = await connect();
@@ -15,33 +15,39 @@ async function selectEquipmentById(id){
 
 async function insertEquipment(user) {
     const client = await connect();
-    
+
     try {
-        await client.query("BEGIN"); // Inicia uma transação
+        const sql1 = `INSERT INTO inventario.equipamentos (nf, processo, idresponsavel, local, datacompra, utilizador, idmarca, codigodoacao, idproduto, patrimonio, idprojeto, ativo, servicetag, observacao, idmodelo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING id, idproduto, patrimonio`;
 
-        // Inserir o equipamento e retornar o ID gerado
-        const sql1 = `INSERT INTO inventario.equipamentos(nf, processo, idresponsavel, local, datacompra, utilizador, idmarca, codigodoacao, idproduto, patrimonio, idprojeto, ativo, servicetag, office, observacao, idmodelo) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16) RETURNING id, idproduto`;
+        const res = await client.query(sql1, [ user.nf, user.processo, user.idresponsavel, user.local, user.datacompra, user.utilizador, user.idmarca, user.codigodoacao, user.idproduto, user.patrimonio, user.idprojeto, user.ativo, user.servicetag, user.observacao, user.idmodelo]);
 
-        const res = await client.query(sql1, [ user.nf, user.processo, user.idresponsavel, user.local, user.datacompra, user.utilizador, user.idmarca, user.codigodoacao, user.idproduto, user.patrimonio, user.idprojeto, user.ativo, user.servicetag, user.office, user.observacao, user.idmodelo]);
-
-        if(user.idproduto === 1 && user.componente !== null){
-            const equipmentId = res.rows[0].id;
-            const componentes = user.componentes; 
+        const equipmentId = res.rows[0].id; 
+        
+        if(user.idproduto === 1 && user.componentes !== 0) {
             const sql2 = "INSERT INTO inventario.depara_equipamento_componentes(id_componentes, id_equipamentos) VALUES ($1, $2)";
-            for (const componente of componentes) {
+            for (const componente of user.componentes) {
                 await client.query(sql2, [componente, equipmentId]);
             }
-            return equipmentId; 
-        }else{
-            await client.query("COMMIT"); 
-            return 
         }
 
-    } catch (error) {
-        await client.query("ROLLBACK"); 
-        console.log(error)
+        console.log(user.id)
+
+        if(user.idsoftware !== null){
+            const sql3 = "INSERT INTO inventario.depara_equipamentos_softwares(id_software, id_equipamento, licenca) VALUES ($1, $2, $3)";
+            for(const software of user.idsoftware){
+                await client.query(sql3, [ software, equipmentId, user.licenca])
+            }
+        }
+
+
+
+    } catch (erro) {
+        
+        console.error("Erro ao inserir equipamento", erro);
+        return erro;
     }
 }
+
 
 async function updateEquipment(id, user) {
     const client = await connect();
@@ -50,8 +56,8 @@ async function updateEquipment(id, user) {
         // Início da transação
         await client.query('BEGIN');
 
-        const sqlUpdate1 = `UPDATE inventario.equipamentos SET nf = $1, processo = $2, idresponsavel = $3, local = $4, datacompra = $5, utilizador = $6, idmarca = $7, codigodoacao = $8, idproduto = $9, patrimonio = $10, idprojeto = $11, ativo = $12, servicetag = $13, office = $14, observacao = $15, idmodelo = $16 WHERE id = $17`;
-        const valuesUpdate1 = [user.nf, user.processo, user.idresponsavel, user.local, user.datacompra,user.utilizador, user.idmarca, user.codigodoacao, user.idproduto,user.patrimonio, user.idprojeto, user.ativo, user.servicetag, user.office, user.observacao, user.idmodelo, id];
+        const sqlUpdate1 = `UPDATE inventario.equipamentos SET nf = $1, processo = $2, idresponsavel = $3, local = $4, datacompra = $5, utilizador = $6, idmarca = $7, codigodoacao = $8, idproduto = $9, patrimonio = $10, idprojeto = $11, ativo = $12, servicetag = $13, idsoftware = $14, observacao = $15, idmodelo = $16 WHERE id = $17`;
+        const valuesUpdate1 = [user.nf, user.processo, user.idresponsavel, user.local, user.datacompra,user.utilizador, user.idmarca, user.codigodoacao, user.idproduto,user.patrimonio, user.idprojeto, user.ativo, user.servicetag, user.idsoftware, user.observacao, user.idmodelo, id];
         await client.query(sqlUpdate1, valuesUpdate1);
 
         // Remover componentes antigos (caso necessário)

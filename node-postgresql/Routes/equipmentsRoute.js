@@ -29,29 +29,35 @@ equipmentsRouter.post("/equipamentos", async (req, res) => {
     try {
         let dataRecieved = req.body;
         /* Verificação dos campos nulos */
+        if(Object.keys(dataRecieved).length === 0){
+            return res.status(411).json({ message: "Não é possivel adicionar um item nulo" })
+        }
+        if(dataRecieved.patrimonio != null && !dataRecieved.idresponsavel){
+            return res.status(411).json({ message: "Erro: Não é possível adicionar um equipamento patrimoniado sem um responsável."}); 
+        }
+        if(dataRecieved.idproduto === 1 && dataRecieved.componentes !== 0){
+            return res.status(500).json({ message: "Erro, não é possivel adicionar um computador sem suas especificações" })
+        }
         if (dataRecieved.local == null){
-            return res.json({ message: "Erro, o campo Local não pode ser nulo" })
+            return res.status(500).json({ message: "Erro, o campo Local não pode ser nulo" })
         }
         if(dataRecieved.utilizador == null){
-            return res.json({ message: "Erro, o campo Utilizador não pode ser nulo, caso não pertença a ninguém digite ROTATIVO"})
+            return res.status(500).json({ message: "Erro, o campo Utilizador não pode ser nulo, caso não pertença a ninguém digite ROTATIVO"})
         } 
         if(dataRecieved.idproduto == null){
-            return res.json({ message: "Erro o campo Tipo de produto nao pode ser nulo"})
+            return res.status(500).json({ message: "Erro o campo Tipo de produto nao pode ser nulo"})
         }
         if(dataRecieved.idprojeto == null){
-            return res.json({ message: "Erro o campo Projeto nao pode ser nulo"})
+            return res.status(500).json({ message: "Erro o campo Projeto nao pode ser nulo"})
         }
         if(dataRecieved.ativo == null){
-            return res.json({ message: "Erro o campo Ativo nao pode ser nulo"})
-        }
-        if(Object.keys(dataRecieved).length === 0){
-            return res.json({ message: "Não é possivel adicionar um item nulo" })
+            return res.status(500).json({ message: "Erro o campo Ativo nao pode ser nulo"})
         }
         /* Final da verificação */
         await equipmentsController.insertEquipment(req.body);
-
-    } catch (erro) {
-        return res.status(500).json({ message: "Erro:", erro });
+        return res.status(200).json({ message: "Sucesso ao cadastrar equipamento" })
+    } catch (Error) {
+        return res.status(500).json({ message: "Erro:", Error });
     }
 });
 
